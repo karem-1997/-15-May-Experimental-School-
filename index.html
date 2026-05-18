@@ -52,13 +52,13 @@
             <div class="p-6 space-y-4 text-slate-700 text-justify leading-relaxed">
                 <p class="font-bold text-blue-600 text-center text-lg">أهلاً بكم في منبر العلم والتميز 🎓</p>
                 <p class="text-sm">
-                    تتشرف **إدارة مدرسة 15 مايو التجريبية** برفع أسمى آيات التهاني والتبريكات لطلابها الأوفياء المتفوقين. لقد أسسنا هذه **"المنصة الرقمية للوحة الشرف"** لكي تكون شاهداً دائماً على تميزكم وإبداعكم، وتتويجاً لرحلتكم الملهمة من الجد والاجتهاد.
+                    تتشرف **إدارة مدرسة 15 مايو التجريبية** برفع أسمى آيات التهاني والتبريكات لطلابها الأوفياء المتفوقين ولطاقم معلميها الأجلاء. لقد أسسنا هذه **"المنصة الرقمية للوحة الشرف"** لكي تكون شاهداً دائماً على تميزكم وإبداعكم، وتتويجاً لرحلتكم الملهمة من الجد والاجتهاد.
                 </p>
                 <p class="text-sm">
-                    كل شهادة تقدير معلقة هنا تمثل قصة نجاح فريدة وساعات من المثابرة. إن هذا المعرض متاح لكم ولأولياء أموركم الكرام للاستعراض، والبحث، والتحميل المباشر بجودة عالية للاحتفاظ بذكريات النجاح ومشاركتها بكل فخر وإعزاز.
+                    كل شهادة تقدير أو بطاقة إهداء معلقة هنا تمثل قصة نجاح فريدة وساعات من المثابرة والعطاء. إن هذا المعرض متاح لكم ولأولياء أموركم الكرام للاستعراض، والبحث، والتحميل المباشر بجودة عالية للاحتفاظ بذكريات النجاح ومشاركتها بكل فخر وإعزاز.
                 </p>
                 <p class="text-xs text-amber-600 font-bold bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
-                    🌟 "مبارك لفرسان مدرسة 15 مايو التجريبية.. أنتم قادة المستقبل وفخر الوطن!" 🌟
+                    🌟 "مبارك لفرسان ومبدعي مدرسة 15 مايو التجريبية.. أنتم قادة المستقبل وفخر الوطن!" 🌟
                 </p>
             </div>
             <div class="bg-slate-50 px-6 py-4 flex justify-end">
@@ -69,7 +69,7 @@
 
     <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-40">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-            <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('user-view')">
+            <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchMainTab('user-view')">
                 <span class="text-xl">🏫</span>
                 <span class="font-black text-sm md:text-base text-slate-900 tracking-tight">15 مايو التجريبية</span>
             </div>
@@ -90,22 +90,31 @@
     <main class="container mx-auto px-4 py-10 max-w-6xl">
         
         <section id="user-view" class="tab-content block">
-            <header class="text-center mb-12 flex flex-col items-center">
+            <header class="text-center mb-8 flex flex-col items-center">
                 <button onclick="openInfoModal()" class="pulse-badge bg-blue-100 hover:bg-blue-200 text-blue-800 text-xs font-bold px-5 py-2 rounded-full uppercase tracking-wider cursor-pointer transition flex items-center gap-1 focus:outline-none">
                     <span>لوحة الشرف الرقمية</span> ✨
                 </button>
-                <h2 class="text-2xl font-black text-slate-900 mt-4 mb-2">ابحث عن شهادة التقدير الخاصة بك</h2>
-                <p class="text-slate-500 max-w-md mx-auto text-xs">اكتب اسمك في صندوق البحث بالأسفل لتظهر شهادتك فوراً، ويمكنك تحميلها مباشرة بجودة عالية.</p>
+                <h2 class="text-2xl font-black text-slate-900 mt-4 mb-2">منصة التقدير والإهداءات الرسمية</h2>
+                <p class="text-slate-500 max-w-md mx-auto text-xs">ابحث عن شهادة التقدير الخاصة بك أو ببطاقات الإهداء الموجهة للمعلمين والمعلمات.</p>
             </header>
+
+            <div class="flex justify-center gap-4 mb-8">
+                <button id="tab-btn-students" onclick="switchCategory('students')" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md transition transform active:scale-95 cursor-pointer">
+                    <span>🎓 لوحة شرف الطلاب</span>
+                </button>
+                <button id="tab-btn-teachers" onclick="switchCategory('teachers')" class="flex items-center gap-2 px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 transition transform active:scale-95 cursor-pointer">
+                    <span>📚 إهداءات المعلمين والمعلمات</span>
+                </button>
+            </div>
 
             <div class="max-w-xl mx-auto mb-12 relative">
                 <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">🔍</div>
-                <input type="text" id="search-input" oninput="filterCertificates()" placeholder="اكتب اسم الطالب للبحث الفوري..." 
+                <input type="text" id="search-input" oninput="filterCertificates()" placeholder="اكتب الاسم للبحث الفوري..." 
                        class="w-full pr-12 pl-5 py-3.5 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base placeholder:text-slate-400">
             </div>
 
             <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-3">
-                <h3 class="text-lg font-bold text-slate-800">الشهادات المرفوعة لايف</h3>
+                <h3 id="category-title" class="text-lg font-bold text-slate-800">الشهادات المرفوعة</h3>
                 <span id="counter" class="bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-md">جاري التحميل...</span>
             </div>
 
@@ -113,24 +122,34 @@
 
             <div id="no-results" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 shadow-sm">
                 <span class="text-5xl block mb-3">⚠️</span>
-                <p class="text-base font-bold text-slate-600">عذراً، لم يتم العثور على أي شهادة مضافة بهذا الاسم!</p>
+                <p class="text-base font-bold text-slate-600">عذراً، لم يتم العثور على أي نتائج مطابقة لهذا الاسم في هذا القسم!</p>
             </div>
         </section>
+
 
         <section id="admin-view" class="tab-content hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
                 <div class="bg-slate-900 text-white p-6 flex justify-between items-center">
                     <div>
                         <h3 class="text-lg font-bold">⚙️ لوحة الإدارة والتحكم السحابية</h3>
-                        <p class="text-slate-400 text-xs">إضافة وحذف الشهادات فورياً عبر الـ Firebase (لايف)</p>
+                        <p class="text-slate-400 text-xs">إضافة وحذف الشهادات فورياً عبر الـ Firebase</p>
                     </div>
                     <button onclick="lockAdminZone()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg transition cursor-pointer">🔒 قفل الخروج</button>
                 </div>
                 
                 <div class="p-6 space-y-6 border-b border-slate-100 bg-slate-50/50">
-                    <h4 class="text-sm font-bold text-blue-600 border-r-4 border-blue-600 pr-2">➕ إضافة شهادة طالب جديد للسيرفر</h4>
+                    <h4 class="text-sm font-bold text-blue-600 border-r-4 border-blue-600 pr-2">➕ إضافة شهادة أو إهداء جديد للسيرفر</h4>
+                    
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-2">👤 اسم الطالب كاملاً:</label>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">🎯 نوع الشهادة / القسم:</label>
+                        <select id="admin-cert-category" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white font-bold text-slate-700">
+                            <option value="students">🎓 لوحة شرف الطلاب المتفوقين</option>
+                            <option value="teachers">📚 إهداء وتقدير المعلمين والمعلمات</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">👤 الاسم كاملاً (الطالب أو المعلم):</label>
                         <input type="text" id="admin-student-name" placeholder="اكتب الاسم ثلاثي أو رباعي..." 
                                class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
                     </div>
@@ -151,7 +170,7 @@
                     </div>
 
                     <button id="btn-submit-certificate" onclick="addNewCertificate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-sm shadow-md transition cursor-pointer">
-                        تثبيت ورفع الشهادة إلى السيرفر لايف 🚀
+                        تثبيت ورفع الشهادة إلى السيرفر 🚀
                     </button>
                 </div>
 
@@ -184,12 +203,13 @@
         const certsRef = database.ref('certificates');
 
         let certificatesData = {}; 
+        let currentCategory = 'students'; 
         let isAdminAuthenticated = false;
         let temporaryBase64Image = "";
 
         function startWebsite() {
             document.getElementById('welcome-overlay').classList.add('hidden');
-            switchTab('user-view'); 
+            switchMainTab('user-view'); 
         }
 
         function openInfoModal() {
@@ -203,27 +223,22 @@
             modal.classList.add('hidden');
         }
 
-        // الحماية الجديدة: التحقق من كلمة السر عبر السيرفر دون كتابتها في الكود
         function accessAdminZone() {
             if (isAdminAuthenticated) {
-                switchTab('admin-view');
+                switchMainTab('admin-view');
             } else {
                 const passwordInput = prompt("الرجاء إدخال الباسورد للدخول للوحة التحكم:");
                 if (passwordInput === null) return;
 
-                // نقوم بالقراءة من مسار آمن في السيرفر مخصص للباسورد فقط
                 database.ref('adminConfig/password').once('value').then((snapshot) => {
                     const savedPassword = snapshot.val();
-                    
-                    // إذا لم تكن قد أنشأت الباسورد بعد على السيرفر، سنضع "1997" كافتراضي أول مرة
                     const correctPassword = savedPassword ? savedPassword : "1997";
 
                     if (passwordInput === correctPassword) {
                         isAdminAuthenticated = true;
-                        switchTab('admin-view');
+                        switchMainTab('admin-view');
                         loadAdminManagementList();
                         
-                        // تأكيد حفظ الباسورد على السيرفر لأول مرة لضمان التزامن
                         if(!savedPassword) {
                             database.ref('adminConfig').set({ password: "1997" });
                         }
@@ -231,7 +246,6 @@
                         alert("الباسورد خطأ! حاول مرة أخرى.");
                     }
                 }).catch(() => {
-                    // حماية احتياطية في حال لم تكن القواعد تسمح بالقراءة المباشرة
                     alert("فشل الاتصال الآمن بالسيرفر.");
                 });
             }
@@ -239,20 +253,38 @@
 
         function lockAdminZone() {
             isAdminAuthenticated = false;
-            switchTab('user-view');
+            switchMainTab('user-view');
             alert("تم قفل لوحة التحكم بنجاح.");
         }
 
-        function switchTab(tabId) {
+        function switchMainTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
             const btnAdmin = document.getElementById('btn-admin-view');
             if (tabId === 'user-view') {
                 btnAdmin.className = "p-2 text-lg opacity-25 hover:opacity-100 transition duration-300 cursor-pointer text-slate-400 select-none focus:outline-none";
+                renderUserCertificates();
             } else {
                 btnAdmin.className = "p-2 text-lg opacity-100 transition duration-300 cursor-pointer text-blue-600 select-none focus:outline-none";
                 loadAdminManagementList();
             }
+        }
+
+        function switchCategory(category) {
+            currentCategory = category;
+            const btnStudents = document.getElementById('tab-btn-students');
+            const btnTeachers = document.getElementById('tab-btn-teachers');
+            document.getElementById('search-input').value = ""; 
+
+            if (category === 'students') {
+                btnStudents.className = "flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md transition transform active:scale-95 cursor-pointer";
+                btnTeachers.className = "flex items-center gap-2 px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 transition transform active:scale-95 cursor-pointer";
+            } else {
+                btnTeachers.className = "flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-bold text-sm shadow-md transition transform active:scale-95 cursor-pointer";
+                btnStudents.className = "flex items-center gap-2 px-6 py-3 bg-white text-slate-700 border border-slate-200 rounded-xl font-bold text-sm shadow-sm hover:bg-slate-50 transition transform active:scale-95 cursor-pointer";
+            }
+
+            renderUserCertificates();
         }
 
         function previewImage(event) {
@@ -292,21 +324,23 @@
         function addNewCertificate() {
             const nameInput = document.getElementById('admin-student-name');
             const studentName = nameInput.value.trim();
+            const selectedCategory = document.getElementById('admin-cert-category').value;
             const btnSubmit = document.getElementById('btn-submit-certificate');
 
-            if (!studentName) { return alert("برجاء كتابة اسم الطالب!"); }
+            if (!studentName) { return alert("برجاء كتابة الاسم!"); }
             if (!temporaryBase64Image) { return alert("برجاء اختيار صورة الشهادة!"); }
 
             btnSubmit.disabled = true;
-            btnSubmit.innerText = "جاري الرفع والتثبيت على السيرفر لايف... ⏳";
+            btnSubmit.innerText = "جاري الرفع والتثبيت على السيرفر... ⏳";
 
             const newCertRef = certsRef.push();
             newCertRef.set({
                 name: studentName,
-                image: temporaryBase64Image
+                image: temporaryBase64Image,
+                category: selectedCategory 
             }, function(error) {
                 btnSubmit.disabled = false;
-                btnSubmit.innerText = "تثبيت ورفع الشهادة إلى السيرفر لايف 🚀";
+                btnSubmit.innerText = "تثبيت ورفع الشهادة إلى السيرفر 🚀";
 
                 if (error) {
                     alert("حدث خطأ أثناء الرفع.");
@@ -317,13 +351,13 @@
                     document.getElementById('upload-placeholder').classList.remove('hidden');
                     document.getElementById('image-preview-container').classList.add('hidden');
                     
-                    alert(`🚀 تم الرفع بنجاح وبقت لايف للطالب: (${studentName})`);
+                    alert(`🚀 تم الرفع بنجاح وبقت متوفرة في قسمها المحدد لـ: (${studentName})`);
                 }
             });
         }
 
-        function deleteCertificate(firebaseKey, studentName) {
-            if (confirm(`هل أنت متأكد من حذف شهادة الطالب: (${studentName}) نهائياً من السيرفر؟`)) {
+        function deleteCertificate(firebaseKey, name) {
+            if (confirm(`هل أنت متأكد من حذف شهادة: (${name}) نهائياً من السيرفر؟`)) {
                 database.ref('certificates/' + firebaseKey).remove()
                 .then(() => { alert("تم الحذف من السيرفر فوراً."); })
                 .catch(() => { alert("حدث خطأ أثناء الحذف."); });
@@ -350,12 +384,17 @@
 
             keys.forEach((key) => {
                 const cert = certificatesData[key];
+                const catText = (cert.category === 'teachers') ? '📚 معلم' : '🎓 طالب';
+                
                 const row = document.createElement('div');
                 row.className = "flex justify-between items-center py-2.5 gap-4";
                 row.innerHTML = `
                     <div class="flex items-center gap-3 truncate">
                         <img src="${cert.image}" class="w-8 h-8 rounded object-cover border border-gray-200">
-                        <span class="text-xs font-bold text-slate-700 truncate">${cert.name}</span>
+                        <div class="truncate">
+                            <span class="text-xs font-bold text-slate-700 block truncate">${cert.name}</span>
+                            <span class="text-[10px] font-bold text-slate-400 block">${catText}</span>
+                        </div>
                     </div>
                     <button onclick="deleteCertificate('${key}', '${cert.name}')" class="bg-red-100 hover:bg-red-600 text-red-600 hover:text-white text-[11px] font-bold py-1 px-3 rounded-lg transition cursor-pointer">
                         حذف 🗑️
@@ -369,26 +408,45 @@
             const container = document.getElementById('certificates-container');
             container.innerHTML = ''; 
             const keys = Object.keys(certificatesData);
+            
+            const filteredKeys = keys.filter(key => {
+                const cert = certificatesData[key];
+                const certCategory = cert.category || 'students'; 
+                return certCategory === currentCategory;
+            });
 
-            if(keys.length === 0) {
-                document.getElementById('counter').innerText = "0 شهادة مضافة";
-                return;
+            if (currentCategory === 'students') {
+                document.getElementById('category-title').innerText = "لوحة شرف الطلاب المتميزين";
+            } else {
+                document.getElementById('category-title').innerText = "بطاقات تقدير وإهداءات المعلمين";
             }
 
-            keys.forEach((key) => {
+            if(filteredKeys.length === 0) {
+                document.getElementById('counter').innerText = "0 شهادة مضافة";
+                document.getElementById('no-results').classList.remove('hidden');
+                return;
+            } else {
+                document.getElementById('no-results').classList.add('hidden');
+            }
+
+            filteredKeys.forEach((key) => {
                 const cert = certificatesData[key];
+                
+                const titleLabel = (currentCategory === 'teachers') ? `إهداء إلى: ${cert.name}` : `طالب متفوق: ${cert.name}`;
+                const downloadName = (currentCategory === 'teachers') ? `إهداء_${cert.name.replace(/\s+/g, '_')}` : `شهادة_متفوق_${cert.name.replace(/\s+/g, '_')}`;
+
                 const cardHtml = `
                     <div class="cert-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-5 flex flex-col justify-between" data-name="${cert.name}">
                         <div>
                             <div class="flex items-center gap-2 mb-3">
-                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <h4 class="text-sm font-bold text-slate-800 truncate" title="${cert.name}">طالب متفوق: ${cert.name}</h4>
+                                <span class="w-2.5 h-2.5 rounded-full ${currentCategory === 'teachers' ? 'bg-amber-500' : 'bg-emerald-500'} animate-pulse"></span>
+                                <h4 class="text-sm font-bold text-slate-800 truncate" title="${cert.name}">${titleLabel}</h4>
                             </div>
                             <div class="bg-slate-50 rounded-xl overflow-hidden aspect-[4/3] mb-4 flex items-center justify-center border border-slate-100">
                                 <img src="${cert.image}" alt="شهادة ${cert.name}" class="w-full h-full object-contain" loading="lazy">
                             </div>
                         </div>
-                        <a href="${cert.image}" download="شهادة_متفوق_${cert.name.replace(/\s+/g, '_')}" 
+                        <a href="${cert.image}" download="${downloadName}" 
                            class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-xs">
                             <span>حفظ وتحميل الشهادة</span> 📥
                         </a>
@@ -396,7 +454,9 @@
                 `;
                 container.innerHTML += cardHtml;
             });
-            document.getElementById('counter').innerText = `${keys.length} شهادة متاحة`;
+            
+            const totalInCat = filteredKeys.length;
+            document.getElementById('counter').innerText = currentCategory === 'teachers' ? `${totalInCat} إهداء متاح` : `${totalInCat} شهادة متوفرة`;
         }
 
         function filterCertificates() {
@@ -405,8 +465,8 @@
             let foundCount = 0;
 
             cards.forEach(card => {
-                const studentName = card.getAttribute('data-name').toLowerCase();
-                if (studentName.includes(query)) {
+                const nameText = card.getAttribute('data-name').toLowerCase();
+                if (nameText.includes(query)) {
                     card.style.display = 'block';
                     foundCount++;
                 } else {
@@ -415,14 +475,17 @@
             });
 
             const noResults = document.getElementById('no-results');
-            const totalCount = Object.keys(certificatesData).length;
             
-            if (foundCount === 0 && totalCount > 0) {
+            const totalInCat = Object.keys(certificatesData).filter(key => {
+                return (certificatesData[key].category || 'students') === currentCategory;
+            }).length;
+
+            if (foundCount === 0 && totalInCat > 0) {
                 noResults.classList.remove('hidden');
             } else {
                 noResults.classList.add('hidden');
             }
-            document.getElementById('counter').innerText = `${foundCount} من ${totalCount}`;
+            document.getElementById('counter').innerText = `${foundCount} من ${totalInCat}`;
         }
     </script>
 </body>

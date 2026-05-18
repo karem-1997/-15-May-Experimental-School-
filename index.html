@@ -13,7 +13,6 @@
         .modal-fade { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* أنيميشن الوميض والنبض الخاص بزر الشرف ليلفت الانتباه */
         @keyframes pulse-border {
             0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
             50% { transform: scale(1.03); box-shadow: 0 0 12px 4px rgba(245, 158, 11, 0.3); }
@@ -140,7 +139,7 @@
                             </div>
                             <div id="image-preview-container" class="hidden">
                                 <img id="image-preview" src="" alt="معاينة" class="max-h-36 mx-auto rounded-lg shadow-sm border border-slate-200">
-                                <p class="text-[11px] text-emerald-600 font-bold mt-2">✓ جاهزة للرفع التلقائي كـ Base64</p>
+                                <p class="text-[11px] text-emerald-600 font-bold mt-2">✓ تم معالجة الصورة وضغطها بنجاح</p>
                             </div>
                         </div>
                     </div>
@@ -164,7 +163,6 @@
     </footer>
 
     <script>
-        // الـ Config الخاص بمشروعك المتصل بـ Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyBKaTn1gqkWs5R_W-4ieeAWjjauER7Y4cA",
             authDomain: "may-experimental-school.firebaseapp.com",
@@ -176,7 +174,6 @@
             databaseURL: "https://may-experimental-school-default-rtdb.firebaseio.com/"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const certsRef = database.ref('certificates');
@@ -226,9 +223,7 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
-
             const btnAdmin = document.getElementById('btn-admin-view');
-
             if (tabId === 'user-view') {
                 btnAdmin.className = "p-2 text-lg opacity-25 hover:opacity-100 transition duration-300 cursor-pointer text-slate-400 select-none focus:outline-none";
             } else {
@@ -237,22 +232,39 @@
             }
         }
 
+        // دالة ذكية لضغط الصورة وتجنب رسائل حجم الملف الكبير نهائياً
         function previewImage(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 1500000) {
-                alert("الصورة حجمها كبير جداً! برجاء اختيار صورة شهادة أصغر.");
-                event.target.value = "";
-                return;
-            }
-
             const reader = new FileReader();
             reader.onload = function(e) {
-                temporaryBase64Image = e.target.result; 
-                document.getElementById('upload-placeholder').classList.add('hidden');
-                document.getElementById('image-preview-container').classList.remove('hidden');
-                document.getElementById('image-preview').src = temporaryBase64Image;
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    let width = img.width;
+                    let height = img.height;
+
+                    // تصغير الأبعاد القصوى للحفاظ على كفاءة قاعدة البيانات وسرعتها
+                    const MAX_WIDTH = 1000;
+                    if (width > MAX_WIDTH) {
+                        height = Math.round((height * MAX_WIDTH) / width);
+                        width = MAX_WIDTH;
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // ضغط الجودة لـ 65% لتقليل المساحة بشكل ضخم مع الحفاظ على وضوح الكلام
+                    temporaryBase64Image = canvas.toDataURL('image/jpeg', 0.65); 
+                    
+                    document.getElementById('upload-placeholder').classList.add('hidden');
+                    document.getElementById('image-preview-container').classList.remove('hidden');
+                    document.getElementById('image-preview').src = temporaryBase64Image;
+                };
+                img.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
@@ -298,7 +310,6 @@
             }
         }
 
-        // الاستماع الفوري والتلقائي للتغيرات في قاعدة البيانات
         certsRef.on('value', (snapshot) => {
             certificatesData = snapshot.val() || {};
             renderUserCertificates();
@@ -365,7 +376,6 @@
                 `;
                 container.innerHTML += cardHtml;
             });
-
             document.getElementById('counter').innerText = `${keys.length} شهادة متاحة`;
         }
 
@@ -392,10 +402,8 @@
             } else {
                 noResults.classList.add('hidden');
             }
-            
             document.getElementById('counter').innerText = `${foundCount} من ${totalCount}`;
         }
     </script>
 </body>
 </html>
-

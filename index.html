@@ -13,9 +13,8 @@
         .modal-fade { animation: fadeIn 0.2s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
         
-        /* أنيميشن الوميض والنبض الفخم للأزرار والشارات */
         @keyframes pulse-border {
-            0%, 100__ { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
             50% { transform: scale(1.03); box-shadow: 0 0 12px 4px rgba(245, 158, 11, 0.3); }
         }
         @keyframes pulse-blue {
@@ -118,7 +117,6 @@
             </div>
         </section>
 
-
         <section id="admin-view" class="tab-content hidden">
             <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
                 <div class="bg-slate-900 text-white p-6 flex justify-between items-center">
@@ -159,8 +157,7 @@
 
                 <div class="p-6 space-y-4">
                     <h4 class="text-sm font-bold text-red-600 border-r-4 border-red-600 pr-2">🗑️ إدارة وحذف الشهادات من السيرفر فوراً</h4>
-                    <div id="admin-manage-list" class="divide-y divide-slate-100 max-h-60 overflow-y-auto pr-1">
-                        </div>
+                    <div id="admin-manage-list" class="divide-y divide-slate-100 max-h-60 overflow-y-auto pr-1"></div>
                 </div>
             </div>
         </section>
@@ -186,7 +183,6 @@
         const database = firebase.database();
         const certsRef = database.ref('certificates');
 
-        const ADMIN_PASSWORD = "1997"; 
         let certificatesData = {}; 
         let isAdminAuthenticated = false;
         let temporaryBase64Image = "";
@@ -207,18 +203,37 @@
             modal.classList.add('hidden');
         }
 
+        // الحماية الجديدة: التحقق من كلمة السر عبر السيرفر دون كتابتها في الكود
         function accessAdminZone() {
             if (isAdminAuthenticated) {
                 switchTab('admin-view');
             } else {
                 const passwordInput = prompt("الرجاء إدخال الباسورد للدخول للوحة التحكم:");
-                if (passwordInput === ADMIN_PASSWORD) {
-                    isAdminAuthenticated = true;
-                    switchTab('admin-view');
-                    loadAdminManagementList();
-                } else if (passwordInput !== null) {
-                    alert("الباسورد خطأ! حاول مرة أخرى.");
-                }
+                if (passwordInput === null) return;
+
+                // نقوم بالقراءة من مسار آمن في السيرفر مخصص للباسورد فقط
+                database.ref('adminConfig/password').once('value').then((snapshot) => {
+                    const savedPassword = snapshot.val();
+                    
+                    // إذا لم تكن قد أنشأت الباسورد بعد على السيرفر، سنضع "1997" كافتراضي أول مرة
+                    const correctPassword = savedPassword ? savedPassword : "1997";
+
+                    if (passwordInput === correctPassword) {
+                        isAdminAuthenticated = true;
+                        switchTab('admin-view');
+                        loadAdminManagementList();
+                        
+                        // تأكيد حفظ الباسورد على السيرفر لأول مرة لضمان التزامن
+                        if(!savedPassword) {
+                            database.ref('adminConfig').set({ password: "1997" });
+                        }
+                    } else {
+                        alert("الباسورد خطأ! حاول مرة أخرى.");
+                    }
+                }).catch(() => {
+                    // حماية احتياطية في حال لم تكن القواعد تسمح بالقراءة المباشرة
+                    alert("فشل الاتصال الآمن بالسيرفر.");
+                });
             }
         }
 

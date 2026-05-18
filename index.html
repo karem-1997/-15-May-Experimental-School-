@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة لوحة الشرف | مدرسة 15 مايو التجريبية</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .cert-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cert-card:hover { transform: translateY(-6px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .modal-fade { animation: fadeIn 0.2s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        /* أنيميشن الوميض والنبض الخاص بزر الشرف ليلفت الانتباه */
+        @keyframes pulse-border {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50% { transform: scale(1.03); box-shadow: 0 0 12px 4px rgba(245, 158, 11, 0.3); }
+        }
+        .pulse-btn { animation: pulse-border 2s infinite ease-in-out; }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen border-t-4 border-blue-600">
+
+    <div id="welcome-overlay" class="fixed inset-0 bg-slate-900/95 flex flex-col justify-center items-center z-50 text-white px-4 text-center">
+        <div class="bg-white/10 p-8 rounded-2xl backdrop-blur-md border border-white/20 max-w-md w-full shadow-2xl">
+            <span class="text-6xl mb-4 block animate-bounce">🎓</span>
+            <h1 class="text-2xl font-black mb-1 text-amber-400">مدرسة 15 مايو التجريبية</h1>
+            <h2 class="text-xl font-bold mb-4 text-slate-200">منصة لوحة الشرف الرقمية</h2>
+            <p class="text-slate-300 mb-8 text-sm">أهلاً بكم في الصرح الإلكتروني لتكريم الطلاب المتفوقين والمتميزين.</p>
+            <button onclick="startWebsite()" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 text-base font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-amber-500/20 cursor-pointer transition transform active:scale-95">
+                دخول واستعراض لوحة الشرف 🎓
+            </button>
+        </div>
+    </div>
+
+    <div id="info-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden justify-center items-center z-50 px-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl border border-slate-100 modal-fade">
+            <div class="bg-gradient-to-r from-blue-900 to-slate-900 text-white p-6 relative">
+                <h3 class="text-xl font-bold flex items-center gap-2">✨ كلمة مدرسة 15 مايو التجريبية</h3>
+                <p class="text-slate-300 text-xs mt-1">صرح التكريم الإلكتروني الدائم للأبطال والمتميزين</p>
+                <button onclick="closeInfoModal()" class="absolute top-5 left-5 text-slate-400 hover:text-white text-xl cursor-pointer">✕</button>
+            </div>
+            <div class="p-6 space-y-4 text-slate-700 text-justify leading-relaxed">
+                <p class="font-bold text-blue-600 text-center text-lg">أهلاً بكم في منبر العلم والتميز 🎓</p>
+                <p class="text-sm">
+                    تتشرف **إدارة مدرسة 15 مايو التجريبية** برفع أسمى آيات التهاني والتبريكات لطلابها الأوفياء المتفوقين. لقد أسسنا هذه **"المنصة الرقمية للوحة الشرف"** لكي تكون شاهداً دائماً على تميزكم وإبداعكم، وتتويجاً لرحلتكم الملهمة من الجد والاجتهاد.
+                </p>
+                <p class="text-sm">
+                    كل شهادة تقدير معلقة هنا تمثل قصة نجاح فريدة وساعات من المثابرة. إن هذا المعرض متاح لكم ولأولياء أموركم الكرام للاستعراض، والبحث، والتحميل المباشر بجودة عالية للاحتفاظ بذكريات النجاح ومشاركتها بكل فخر وإعزاز.
+                </p>
+                <p class="text-xs text-amber-600 font-bold bg-amber-50 p-3 rounded-xl border border-amber-100 text-center">
+                    🌟 "مبارك لفرسان مدرسة 15 مايو التجريبية.. أنتم قادة المستقبل وفخر الوطن!" 🌟
+                </p>
+            </div>
+            <div class="bg-slate-50 px-6 py-4 flex justify-end">
+                <button onclick="closeInfoModal()" class="bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 px-6 rounded-xl text-sm transition cursor-pointer">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-40">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-1.5 cursor-pointer" onclick="switchTab('user-view')">
+                <span class="text-xl">🏫</span>
+                <span class="font-black text-sm md:text-base text-slate-900 tracking-tight">15 مايو التجريبية</span>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="openInfoModal()" class="pulse-btn bg-amber-500 hover:bg-amber-600 text-white px-3 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1 cursor-pointer shadow-md shadow-amber-500/20">
+                    <span>📜 لوحة الشرف</span>
+                    <span class="text-[11px] animate-bounce">👆</span>
+                </button>
+                
+                <button onclick="accessAdminZone()" id="btn-admin-view" class="p-2 text-lg opacity-25 hover:opacity-100 transition duration-300 cursor-pointer text-slate-400 select-none focus:outline-none">
+                    ⚙️
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-10 max-w-6xl">
+        
+        <section id="user-view" class="tab-content block">
+            <header class="text-center mb-12">
+                <span class="bg-blue-100 text-blue-800 text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider">لوحة الشرف الرقمية</span>
+                <h2 class="text-2xl font-black text-slate-900 mt-3 mb-2">ابحث عن شهادة التقدير الخاصة بك</h2>
+                <p class="text-slate-500 max-w-md mx-auto text-xs">اكتب اسمك في صندوق البحث بالأسفل لتظهر شهادتك فوراً، ويمكنك تحميلها مباشرة بجودة عالية.</p>
+            </header>
+
+            <div class="max-w-xl mx-auto mb-12 relative">
+                <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-slate-400">🔍</div>
+                <input type="text" id="search-input" oninput="filterCertificates()" placeholder="اكتب اسم الطالب للبحث الفوري..." 
+                       class="w-full pr-12 pl-5 py-3.5 rounded-2xl border border-slate-200 bg-white shadow-xl shadow-slate-200/50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-base placeholder:text-slate-400">
+            </div>
+
+            <div class="flex justify-between items-center mb-6 border-b border-slate-200 pb-3">
+                <h3 class="text-lg font-bold text-slate-800">الشهادات المرفوعة لايف</h3>
+                <span id="counter" class="bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1 rounded-md">جاري التحميل...</span>
+            </div>
+
+            <div id="certificates-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+
+            <div id="no-results" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-200 shadow-sm">
+                <span class="text-5xl block mb-3">⚠️</span>
+                <p class="text-base font-bold text-slate-600">عذراً، لم يتم العثور على أي شهادة مضافة بهذا الاسم!</p>
+            </div>
+        </section>
+
+
+        <section id="admin-view" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
+                <div class="bg-slate-900 text-white p-6 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-lg font-bold">⚙️ لوحة الإدارة والتحكم السحابية</h3>
+                        <p class="text-slate-400 text-xs">إضافة وحذف الشهادات فورياً عبر الـ Firebase (لايف)</p>
+                    </div>
+                    <button onclick="lockAdminZone()" class="bg-red-600 hover:bg-red-700 text-white text-xs font-bold py-1.5 px-3 rounded-lg transition cursor-pointer">🔒 قفل الخروج</button>
+                </div>
+                
+                <div class="p-6 space-y-6 border-b border-slate-100 bg-slate-50/50">
+                    <h4 class="text-sm font-bold text-blue-600 border-r-4 border-blue-600 pr-2">➕ إضافة شهادة طالب جديد للسيرفر</h4>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">👤 اسم الطالب كاملاً:</label>
+                        <input type="text" id="admin-student-name" placeholder="اكتب الاسم ثلاثي أو رباعي..." 
+                               class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm bg-white">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-2">🖼️ اختر صورة الشهادة:</label>
+                        <div class="border-2 border-dashed border-slate-300 rounded-xl p-5 text-center hover:border-blue-500 transition relative bg-white">
+                            <input type="file" id="admin-file-input" accept="image/*" onchange="previewImage(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                            <div id="upload-placeholder" class="space-y-1">
+                                <span class="text-3xl block">📁</span>
+                                <p class="text-xs font-medium text-slate-600">اضغط هنا لرفع الشهادة من جهازك</p>
+                            </div>
+                            <div id="image-preview-container" class="hidden">
+                                <img id="image-preview" src="" alt="معاينة" class="max-h-36 mx-auto rounded-lg shadow-sm border border-slate-200">
+                                <p class="text-[11px] text-emerald-600 font-bold mt-2">✓ جاهزة للرفع التلقائي كـ Base64</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="btn-submit-certificate" onclick="addNewCertificate()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-sm shadow-md transition cursor-pointer">
+                        تثبيت ورفع الشهادة إلى السيرفر لايف 🚀
+                    </button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <h4 class="text-sm font-bold text-red-600 border-r-4 border-red-600 pr-2">🗑️ إدارة وحذف الشهادات من السيرفر فوراً</h4>
+                    <div id="admin-manage-list" class="divide-y divide-slate-100 max-h-60 overflow-y-auto pr-1">
+                        </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="text-center py-8 text-xs text-slate-400 border-t border-slate-100 mt-20 bg-white">
+        جميع الحقوق محفوظة © 2026 | مدرسة 15 مايو التجريبية
+    </footer>
+
+    <script>
+        // الـ Config الخاص بمشروعك المتصل بـ Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyBKaTn1gqkWs5R_W-4ieeAWjjauER7Y4cA",
+            authDomain: "may-experimental-school.firebaseapp.com",
+            projectId: "may-experimental-school",
+            storageBucket: "may-experimental-school.firebasestorage.app",
+            messagingSenderId: "792942390739",
+            appId: "1:792942390739:web:6d42f2a8a5e85b9c325326",
+            measurementId: "G-XKP7TTES35",
+            databaseURL: "https://may-experimental-school-default-rtdb.firebaseio.com/"
+        };
+
+        // تهيئة Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const certsRef = database.ref('certificates');
+
+        const ADMIN_PASSWORD = "1997"; 
+        let certificatesData = {}; 
+        let isAdminAuthenticated = false;
+        let temporaryBase64Image = "";
+
+        function startWebsite() {
+            document.getElementById('welcome-overlay').classList.add('hidden');
+            switchTab('user-view'); 
+        }
+
+        function openInfoModal() {
+            const modal = document.getElementById('info-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeInfoModal() {
+            const modal = document.getElementById('info-modal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+
+        function accessAdminZone() {
+            if (isAdminAuthenticated) {
+                switchTab('admin-view');
+            } else {
+                const passwordInput = prompt("الرجاء إدخال الباسورد للدخول للوحة التحكم:");
+                if (passwordInput === ADMIN_PASSWORD) {
+                    isAdminAuthenticated = true;
+                    switchTab('admin-view');
+                    loadAdminManagementList();
+                } else if (passwordInput !== null) {
+                    alert("الباسورد خطأ! حاول مرة أخرى.");
+                }
+            }
+        }
+
+        function lockAdminZone() {
+            isAdminAuthenticated = false;
+            switchTab('user-view');
+            alert("تم قفل لوحة التحكم بنجاح.");
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+
+            const btnAdmin = document.getElementById('btn-admin-view');
+
+            if (tabId === 'user-view') {
+                btnAdmin.className = "p-2 text-lg opacity-25 hover:opacity-100 transition duration-300 cursor-pointer text-slate-400 select-none focus:outline-none";
+            } else {
+                btnAdmin.className = "p-2 text-lg opacity-100 transition duration-300 cursor-pointer text-blue-600 select-none focus:outline-none";
+                loadAdminManagementList();
+            }
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 1500000) {
+                alert("الصورة حجمها كبير جداً! برجاء اختيار صورة شهادة أصغر.");
+                event.target.value = "";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                temporaryBase64Image = e.target.result; 
+                document.getElementById('upload-placeholder').classList.add('hidden');
+                document.getElementById('image-preview-container').classList.remove('hidden');
+                document.getElementById('image-preview').src = temporaryBase64Image;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function addNewCertificate() {
+            const nameInput = document.getElementById('admin-student-name');
+            const studentName = nameInput.value.trim();
+            const btnSubmit = document.getElementById('btn-submit-certificate');
+
+            if (!studentName) { return alert("برجاء كتابة اسم الطالب!"); }
+            if (!temporaryBase64Image) { return alert("برجاء اختيار صورة الشهادة!"); }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "جاري الرفع والتثبيت على السيرفر لايف... ⏳";
+
+            const newCertRef = certsRef.push();
+            newCertRef.set({
+                name: studentName,
+                image: temporaryBase64Image
+            }, function(error) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "تثبيت ورفع الشهادة إلى السيرفر لايف 🚀";
+
+                if (error) {
+                    alert("حدث خطأ أثناء الرفع.");
+                } else {
+                    nameInput.value = "";
+                    temporaryBase64Image = "";
+                    document.getElementById('admin-file-input').value = "";
+                    document.getElementById('upload-placeholder').classList.remove('hidden');
+                    document.getElementById('image-preview-container').classList.add('hidden');
+                    
+                    alert(`🚀 تم الرفع بنجاح وبقت لايف للطالب: (${studentName})`);
+                }
+            });
+        }
+
+        function deleteCertificate(firebaseKey, studentName) {
+            if (confirm(`هل أنت متأكد من حذف شهادة الطالب: (${studentName}) نهائياً من السيرفر؟`)) {
+                database.ref('certificates/' + firebaseKey).remove()
+                .then(() => { alert("تم الحذف من السيرفر فوراً."); })
+                .catch(() => { alert("حدث خطأ أثناء الحذف."); });
+            }
+        }
+
+        // الاستماع الفوري والتلقائي للتغيرات في قاعدة البيانات
+        certsRef.on('value', (snapshot) => {
+            certificatesData = snapshot.val() || {};
+            renderUserCertificates();
+            if (document.getElementById('admin-view').classList.contains('hidden') === false) {
+                loadAdminManagementList();
+            }
+        });
+
+        function loadAdminManagementList() {
+            const listContainer = document.getElementById('admin-manage-list');
+            listContainer.innerHTML = '';
+            const keys = Object.keys(certificatesData);
+
+            if (keys.length === 0) {
+                listContainer.innerHTML = '<p class="text-xs text-gray-400 py-3 text-center">لا توجد شهادات مرفوعة حالياً على السيرفر.</p>';
+                return;
+            }
+
+            keys.forEach((key) => {
+                const cert = certificatesData[key];
+                const row = document.createElement('div');
+                row.className = "flex justify-between items-center py-2.5 gap-4";
+                row.innerHTML = `
+                    <div class="flex items-center gap-3 truncate">
+                        <img src="${cert.image}" class="w-8 h-8 rounded object-cover border border-gray-200">
+                        <span class="text-xs font-bold text-slate-700 truncate">${cert.name}</span>
+                    </div>
+                    <button onclick="deleteCertificate('${key}', '${cert.name}')" class="bg-red-100 hover:bg-red-600 text-red-600 hover:text-white text-[11px] font-bold py-1 px-3 rounded-lg transition cursor-pointer">
+                        حذف 🗑️
+                    </button>
+                `;
+                listContainer.appendChild(row);
+            });
+        }
+
+        function renderUserCertificates() {
+            const container = document.getElementById('certificates-container');
+            container.innerHTML = ''; 
+            const keys = Object.keys(certificatesData);
+
+            if(keys.length === 0) {
+                document.getElementById('counter').innerText = "0 شهادة مضافة";
+                return;
+            }
+
+            keys.forEach((key) => {
+                const cert = certificatesData[key];
+                const cardHtml = `
+                    <div class="cert-card bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden p-5 flex flex-col justify-between" data-name="${cert.name}">
+                        <div>
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <h4 class="text-sm font-bold text-slate-800 truncate" title="${cert.name}">الطالب: ${cert.name}</h4>
+                            </div>
+                            <div class="bg-slate-50 rounded-xl overflow-hidden aspect-[4/3] mb-4 flex items-center justify-center border border-slate-100">
+                                <img src="${cert.image}" alt="شهادة ${cert.name}" class="w-full h-full object-contain" loading="lazy">
+                            </div>
+                        </div>
+                        <a href="${cert.image}" download="شهادة_متفوق_${cert.name.replace(/\s+/g, '_')}" 
+                           class="w-full text-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-4 rounded-xl shadow-md transition flex items-center justify-center gap-2 cursor-pointer text-xs">
+                            <span>حفظ وتحميل الشهادة</span> 📥
+                        </a>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+
+            document.getElementById('counter').innerText = `${keys.length} شهادة متاحة`;
+        }
+
+        function filterCertificates() {
+            const query = document.getElementById('search-input').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.cert-card');
+            let foundCount = 0;
+
+            cards.forEach(card => {
+                const studentName = card.getAttribute('data-name').toLowerCase();
+                if (studentName.includes(query)) {
+                    card.style.display = 'block';
+                    foundCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('no-results');
+            const totalCount = Object.keys(certificatesData).length;
+            
+            if (foundCount === 0 && totalCount > 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+            
+            document.getElementById('counter').innerText = `${foundCount} من ${totalCount}`;
+        }
+    </script>
+</body>
+</html>
+
